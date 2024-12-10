@@ -202,8 +202,12 @@ func (this *Server) ServeHTTP(response http.ResponseWriter, request *http.Reques
 Good:
 
 ```go
+type Handler interface {
+	Handle(context.Context, ...any)
+}
+
 type Processor struct {
-	handler contracts.Handler
+	handler Handler
 }
 
 func (this *Processor) Process(ctx context.Context, v any) any {
@@ -407,7 +411,7 @@ func main() {
 Routes:
 
 ```go
-func Router(calculator contracts.Handler) http.Handler {
+func Router(calculator Handler) http.Handler {
 	h := http.NewServeMux()
 	processor := func() shuttle.Processor { return NewProcessor(calculator) }
 	h.Handle("/add", shuttle.NewHandler(func() shuttle.InputModel { return inputs.NewAddition() }, processor))
